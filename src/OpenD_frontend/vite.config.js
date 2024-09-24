@@ -8,6 +8,12 @@ dotenv.config({ path: '../../.env' });
 
 export default defineConfig({
   build: {
+    rollupOptions: {
+      external: [
+        'react-bootstrap',
+        'bootstrap'
+      ]
+    }, 
     emptyOutDir: true,
   },
   optimizeDeps: {
