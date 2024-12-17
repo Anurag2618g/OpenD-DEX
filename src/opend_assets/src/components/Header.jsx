@@ -5,16 +5,25 @@ import { BrowserRouter, Link, Switch, Route } from "react-router-dom";
 import Minter from "./Minter";
 import Gallery from "./Gallery";
 import { opend } from "../../../declarations/opend";
+import CURRENT_USER_ID from "../index";
 
 function Header() {
-
   const [userOwnedGallery, setOwnedGallery] = useState();
+  const [listingGallery, setListingGallery] = useState();
 
   async function getNFTs() {
     const userNFTIds = await opend.getOwnedNFTs(CURRENT_USER_ID);
     console.log(userNFTIds);
-    setOwnedGallery(<Gallery title="Mt NFTs" ids={userNFTIds} />);
-  } 
+    setOwnedGallery(
+      <Gallery title="My NFTs" ids={userNFTIds} role="collection" />
+    );
+
+    const listedNFTIds = await opend.getListedNFTs();
+    console.log(listedNFTIds);
+    setListingGallery(
+      <Gallery title="Discover" ids={listedNFTIds} role="discover" />
+    );
+  }
 
   useEffect(() => {
     getNFTs();
@@ -46,14 +55,17 @@ function Header() {
         </header>
       </div>
       <Switch>
-        <Route path="/"><img className="bottom-space" src={homeImage} /></Route>
-        <Route path="/discover"><h1>Discover</h1></Route>
-        <Route path="/minter"><Minter /></Route>
-        <Route path="/collection"><Gallery title="My NFTs" /></Route>
+        <Route exact path="/">
+          <img className="bottom-space" src={homeImage} />
+        </Route>
+        <Route path="/discover">{listingGallery}</Route>
+        <Route path="/minter">
+          <Minter />
+        </Route>
+        <Route path="/collection">{userOwnedGallery}</Route>
       </Switch>
     </BrowserRouter>
   );
-
 }
 
 export default Header;
